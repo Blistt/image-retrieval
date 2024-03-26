@@ -1,0 +1,5 @@
+conda install tensorflow
+conda install numpy
+conda install matplotlib
+conda install scikit-learn
+conda install keras
