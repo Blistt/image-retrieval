@@ -4,6 +4,9 @@ import numpy as np
 import tensorflow as tf
 
 def load_images(images, path, view_images=[]):
+  '''
+  Load images from the given path and preprocess them for VGG19 model
+  '''
   img_paths = os.listdir(path)
   print(f'Loading {len(img_paths)} images')
   for img in tqdm(img_paths):
@@ -16,7 +19,10 @@ def load_images(images, path, view_images=[]):
 
 import matplotlib.pyplot as plt
 
-def show_images(images, filename):
+def show_images(images, k=6):
+    '''
+    Loads a query image
+    '''
     # Display image in new window
     fig = plt.figure(figsize=(14, 8))
 
