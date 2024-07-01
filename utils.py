@@ -1,8 +1,9 @@
 from tqdm import tqdm
-import os
 import numpy as np
 from pathlib import Path
 import matplotlib.pyplot as plt
+import tensorflow as tf
+
 
 def index_files(dir, prefix='wb'):
     '''
@@ -18,6 +19,9 @@ def index_files(dir, prefix='wb'):
 
 
 def show_images(images, distances, pair_distances_img, pair_distances_emb, norm=False):
+    '''
+    Displays retrieved images along with their distances to the query image.
+    '''
     # Display image in new window
     fig = plt.figure(figsize=(14, 8))
 
@@ -51,3 +55,27 @@ def show_images(images, distances, pair_distances_img, pair_distances_emb, norm=
       plt.imshow(np.squeeze(images[i]))
       plt.axis('off')
     plt.show()
+
+
+def load_images(path, return_filenames=False):
+  '''
+  Loads images with keras.preprocessing.image.load_img for VGG19 pre-processing
+  '''
+  path = Path(path)
+  # Ensures only valid image files are loaded
+  img_paths = list(path.glob('*.jpg')) + list(path.glob('*.jpeg')) + list(path.glob('*.png')) \
+              + list(path.glob('*.gif'))
+  images = []
+  filenames = []
+  print(f'Loading {len(img_paths)} images')
+  for img_path in tqdm(img_paths):
+    # load image
+    img = tf.keras.preprocessing.image.load_img(img_path, target_size=(224,224))
+    images.append(img)
+    filenames.append(img_path.name)
+  print('images loaded as' , type(images[0]), 'type')
+  
+  if return_filenames:
+    return images, filenames
+  else:
+    return images
