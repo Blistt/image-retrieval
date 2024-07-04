@@ -8,7 +8,6 @@ def get_embeddings(visual_model, f_levels, images, filenames=None):
   '''
   Compute embeddings of images using the VGG19 model
   '''
-
   # Create a single string with all the f_levels
   levels = '_'.join([str(f) for f in f_levels])
   path = Path(f'./dataset/embeddings/{levels}')
@@ -54,7 +53,6 @@ def get_embeddings(visual_model, f_levels, images, filenames=None):
       print(f'Getting embedding of img no. {i}, with shape {E[i].shape}, and {len(f_levels)} layers')
     
   return np.array(E)
-
 
 
 def load_precomp_embeddings(filenames, layer, path='./dataset/embeddings/', names=False):

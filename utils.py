@@ -3,6 +3,7 @@ import numpy as np
 from pathlib import Path
 import matplotlib.pyplot as plt
 import tensorflow as tf
+import PIL
 
 
 def index_files(dir, prefix='wb'):
@@ -18,43 +19,23 @@ def index_files(dir, prefix='wb'):
     print(f'Renamed {len(files)} files in {dir}')
 
 
-def show_images(images, distances, pair_distances_img, pair_distances_emb, norm=False):
+def save_images(images, output_path):
     '''
-    Displays retrieved images along with their distances to the query image.
+    Saves retrieved images in a grid
     '''
-    # Display image in new window
-    fig = plt.figure(figsize=(14, 8))
+    grid_size = int(np.ceil(np.sqrt(len(images))))
+    fig = plt.figure(figsize=(10, 10))
 
-    # Normalizes all distances if norm is True
-    if norm:
-      distances = distances / np.max(distances)
-      pair_distances_img = pair_distances_img / np.max(pair_distances_img)
-      pair_distances_emb = pair_distances_emb / np.max(pair_distances_emb)
+    for i, img in enumerate(images):
+        ax = fig.add_subplot(grid_size, grid_size, i+1)  # add 1 to i because subplot indices start from 1
+        ax.imshow(img)
+        ax.axis('off')
 
-    for i in range(len(images)):
-      ax = fig.add_subplot(1, len(images), i+1)
-      if i == 0:
-        ax.set_title('Query Image')
-        # show distance
-        ax.text(0.5, -0.1, f'VGG distance to query', ha='center', va='center', transform=ax.transAxes)
-        # show pair distance img
-        ax.text(0.5, -0.2, f'SSIM to image on the left', ha='center', va='center', transform=ax.transAxes)
-        # show pair distance emb
-        ax.text(0.5, -0.3, f'VGG distance to image on the left', ha='center', va='center', transform=ax.transAxes)
-      if i >= 1:
-        title = 'neighbor' + str(i)
-        ax.set_title(title)
-        # show distance
-        ax.text(0.5, -0.1, f'{distances[i-1]:.2f}', ha='center', va='center', transform=ax.transAxes)
-      if i >= 2:
-        # show pair distance img
-        ax.text(0.5, -0.2, f'{pair_distances_img[i-2]:.2f}', ha='center', va='center', transform=ax.transAxes)
-        # show pair distance emb
-        ax.text(0.5, -0.3, f'{pair_distances_emb[i-2]:.2f}', ha='center', va='center', transform=ax.transAxes)
+    plt.savefig(output_path)
+    plt.close(fig)
 
-      plt.imshow(np.squeeze(images[i]))
-      plt.axis('off')
-    plt.show()
+    print(f"The grid of images was successfully saved to {output_path}")
+    
 
 
 def load_images(path, return_filenames=False):
@@ -78,4 +59,21 @@ def load_images(path, return_filenames=False):
   if return_filenames:
     return images, filenames
   else:
+    return images
+  
+
+def load_from_filenames(filenames, path='./dataset/images/'):
+    '''
+    Load images from a list of filenames
+    '''
+    # Remove .npy extension if present
+    filenames = [filename.split('.')[0] for filename in filenames]
+    images = []
+    for filename in filenames:
+        # Load image with PIL
+        try:
+          img = PIL.Image.open(f'{path}/{filename}.jpg')
+          images.append(img)
+        except:
+           print(f'Error loading {filename}.jpg, skipping...')
     return images
