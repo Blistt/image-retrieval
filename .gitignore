@@ -1,3 +1,2 @@
-images/
-embeddings/
 dataset/
+__pycache__/
